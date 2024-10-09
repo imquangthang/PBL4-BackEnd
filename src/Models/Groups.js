@@ -3,7 +3,7 @@ import mongoosePaginate from "mongoose-paginate-v2";
 
 const Schema = mongoose.Schema;
 
-const Groups = new Schema(
+const GroupsSchema = new Schema(
   {
     name: {
       type: String,
@@ -22,6 +22,7 @@ const Groups = new Schema(
   }
 );
 
-Groups.plugin(mongoosePaginate);
+GroupsSchema.plugin(mongoosePaginate);
 
-export default mongoose.model("groups", Groups);
+const Groups = mongoose.model("groups", GroupsSchema);
+module.exports = Groups;

@@ -3,7 +3,7 @@ import mongoosePaginate from "mongoose-paginate-v2";
 
 const Schema = mongoose.Schema;
 
-const Roles = new Schema(
+const RolesSchema = new Schema(
   {
     url: {
       type: String,
@@ -22,6 +22,7 @@ const Roles = new Schema(
   }
 );
 
-Roles.plugin(mongoosePaginate);
+RolesSchema.plugin(mongoosePaginate);
 
-export default mongoose.model("roles", Roles);
+const Roles = mongoose.model("roles", RolesSchema);
+module.exports = Roles;

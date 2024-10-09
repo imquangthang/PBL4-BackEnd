@@ -3,7 +3,7 @@ import mongoosePaginate from "mongoose-paginate-v2";
 
 const Schema = mongoose.Schema;
 
-const Accounts = new Schema(
+const AccountsSchema = new Schema(
   {
     firstName: {
       type: String,
@@ -29,12 +29,13 @@ const Accounts = new Schema(
     },
     address: String,
     gender: {
-      type: Boolean,
-      default: true, // Giả sử true là nam, false là nữ
+      type: String,
+      default: true, // Giả sử true/1 là nam, false/0 là nữ
     },
     phone: {
       type: String,
       required: true,
+      unique: true,
     },
     groupId: {
       type: Schema.Types.ObjectId,
@@ -50,6 +51,7 @@ const Accounts = new Schema(
   }
 );
 
-Accounts.plugin(mongoosePaginate);
+AccountsSchema.plugin(mongoosePaginate);
 
-export default mongoose.model("accounts", Accounts);
+const Accounts = mongoose.model("accounts", AccountsSchema);
+module.exports = Accounts;

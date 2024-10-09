@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
+import mongoose, { model } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 
 const Schema = mongoose.Schema;
 
-const Group_Role = new Schema(
+const Group_Role_Schema = new Schema(
   {
     groupId: {
       type: Schema.Types.ObjectId,
@@ -22,6 +22,7 @@ const Group_Role = new Schema(
   }
 );
 
-Group_Role.plugin(mongoosePaginate);
+Group_Role_Schema.plugin(mongoosePaginate);
 
-export default mongoose.model("group_role", Group_Role);
+const Group_Role = mongoose.model("group_role", Group_Role_Schema);
+module.exports = Group_Role;

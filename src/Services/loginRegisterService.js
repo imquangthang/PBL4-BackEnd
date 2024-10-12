@@ -30,6 +30,16 @@ const checkPhoneExist = async (userPhone) => {
   }
 };
 
+const checkUsernameExist = async (userName) => {
+  try {
+    let user = await db.accounts.findOne({ username: userName }).exec();
+    return user ? true : false; // Return true if user exists, otherwise false
+  } catch (error) {
+    console.log("Error checking userName: ", error);
+    return false; // In case of an error, return false
+  }
+};
+
 const registerNewUser = async (rawUserData) => {
   try {
     // check email/phonenumber are exist
@@ -45,6 +55,13 @@ const registerNewUser = async (rawUserData) => {
       return {
         EM: "The phone number is a already exist",
         EC: 2,
+      };
+    }
+    let isUsernameExits = await checkUsernameExist(rawUserData.username);
+    if (isUsernameExits === true) {
+      return {
+        EM: "The Username is a already exist",
+        EC: 3,
       };
     }
     // hash user password

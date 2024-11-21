@@ -27,7 +27,9 @@ const AccountsSchema = new Schema(
       required: true,
       unique: true,
     },
-    address: String,
+    address: {
+      type: String,
+    },
     gender: {
       type: String,
       default: true, // Giả sử true/1 là nam, false/0 là nữ
@@ -41,7 +43,9 @@ const AccountsSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "groups", // Liên kết với bảng "groups" nếu có
     },
-    avatar: String,
+    avatar: {
+      type: String,
+    },
   },
   {
     timestamps: {

@@ -71,8 +71,6 @@ const registerNewUser = async (rawUserData) => {
       name: "user",
     });
 
-    console.log(group);
-
     // create new user
     await db.accounts.create({
       firstName: rawUserData.firstName,
@@ -83,6 +81,8 @@ const registerNewUser = async (rawUserData) => {
       gender: rawUserData.gender,
       phone: rawUserData.phone,
       groupId: group._id,
+      avatar: "",
+      address: "",
     });
 
     return {
@@ -118,20 +118,31 @@ const handleUserLogin = async (rawData) => {
         let groupWithRoles = await getGroupWithRoles(user);
         let payload = {
           id: user.id,
-          email: user.email,
           groupWithRoles,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
           username: user.username,
+          phone: user.phone,
+          gender: user.gender,
+          avatar: user.avatar,
+          address: user.address,
         };
         let token = createJWT(payload);
         return {
           EM: "ok!",
           EC: 0,
           DT: {
-            id: user.id,
             access_token: token,
             groupWithRoles,
             email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
             username: user.username,
+            phone: user.phone,
+            gender: user.gender,
+            avatar: user.avatar,
+            address: user.address,
           },
         };
       }

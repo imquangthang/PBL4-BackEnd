@@ -27,7 +27,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Connect DB
-// connectDB();
+connectDB();
 
 // init wed routes
 initApiRoutes(app);

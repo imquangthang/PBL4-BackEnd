@@ -3,6 +3,7 @@ import Accounts from "./Accounts.js";
 import Groups from "./Groups.js";
 import Roles from "./Roles.js";
 import Group_Role from "./Group_Role.js";
+import HealthRecord from "./HealthRecord.js"
 
 const createTableAccounts = async () => {
   await Accounts.createCollection()
@@ -52,9 +53,22 @@ const createTableGroup_Role = async () => {
     });
 };
 
+const createTableHealthRecord = async () => {
+  await HealthRecord.createCollection()
+    .then(() => {
+      console.log('Collection "HealthRecord" đã được tạo trong MongoDB');
+      mongoose.disconnect(); // Ngắt kết nối sau khi hoàn tất
+    })
+    .catch((err) => {
+      console.error("Lỗi khi tạo collection:", err);
+      mongoose.disconnect(); // Ngắt kết nối nếu có lỗi
+    });
+};
+
 export {
   createTableAccounts,
   createTableGroups,
   createTableRoles,
   createTableGroup_Role,
+  createTableHealthRecord,
 };

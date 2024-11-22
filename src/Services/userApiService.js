@@ -5,6 +5,29 @@ import {
   checkEmailExist,
   checkPhoneExist,
 } from "./loginRegisterService";
+import { getGroupWithRoles } from "../Services/JWTService";
+import { createJWT } from "../Middleware/JWTActions";
+
+const getGroups = async () => {
+  try {
+    // Sử dụng model `Group` để truy vấn và sắp xếp theo `name` tăng dần
+    const data = await db.groups.find({}).sort({ name: 1 });
+
+    return {
+      EM: "Get group success", // Thông báo thành công
+      EC: 0, // Error code = 0 (không lỗi)
+      DT: data, // Trả về dữ liệu nhóm
+    };
+  } catch (error) {
+    console.error("Error in getGroups service:", error);
+
+    return {
+      EM: "Error from service", // Thông báo lỗi
+      EC: 1, // Error code = 1 (có lỗi)
+      DT: [], // Không có dữ liệu
+    };
+  }
+};
 
 const getAllUsers = async () => {
   try {
@@ -37,20 +60,29 @@ const getAllUsers = async () => {
 
 const getUserWithPagination = async (page, limit) => {
   try {
-    let offset = (page - 1) * limit;
-    const { count, rows } = await db.User.findAndCountAll({
-      offset: offset,
-      limit: limit,
-      attributes: ["id", "username", "email", "phone", "sex", "address"],
-      include: { model: db.Group, attributes: ["name", "description", "id"] },
-      order: [["id", "DESC"]],
-    });
+    const offset = (page - 1) * limit;
 
-    let totalPages = Math.ceil(count / limit);
-    let data = {
+    // Tìm user với phân trang và bao gồm thông tin từ Group
+    const [users, count] = await Promise.all([
+      db.accounts
+        .find({})
+        // .select("id username email phone sex address")
+        .populate({
+          path: "groupId", // Trường tham chiếu đến Group trong schema
+          select: "name description id", // Chỉ lấy các trường cần thiết của Group
+        })
+        .skip(offset)
+        .limit(limit)
+        .sort({ id: -1 }), // Sắp xếp giảm dần theo id
+      db.accounts.countDocuments(), // Đếm tổng số user
+    ]);
+
+    const totalPages = Math.ceil(count / limit);
+
+    const data = {
       totalRows: count,
       totalPages: totalPages,
-      users: rows,
+      users: users,
     };
 
     return {
@@ -59,7 +91,7 @@ const getUserWithPagination = async (page, limit) => {
       DT: data,
     };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return {
       EM: "something wrong with service",
       EC: 1,
@@ -231,18 +263,44 @@ const updateUser = async (data) => {
       // Cập nhật thông tin người dùng
       user.firstName = data.firstName;
       user.lastName = data.lastName;
-      user.username = data.username;
       user.gender = data.gender;
       user.address = data.address;
       user.avatar = data.avatar;
+      user.groupId = data.group;
 
       // Lưu lại thay đổi
       await user.save();
-
+      
+      user = await db.accounts.findOne({ email: data.email }).exec();
+      let groupWithRoles = await getGroupWithRoles(user);
+      let payload = {
+        id: user.id,
+        groupWithRoles,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        phone: user.phone,
+        gender: user.gender,
+        avatar: user.avatar,
+        address: user.address,
+      };
+      let token = createJWT(payload);
       return {
         EM: "Update User Success",
         EC: 0,
-        DT: "",
+        DT: {
+          access_token: token,
+          groupWithRoles,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          username: user.username,
+          phone: user.phone,
+          gender: user.gender,
+          avatar: user.avatar,
+          address: user.address,
+        },
       };
     } else {
       // Không tìm thấy người dùng
@@ -259,6 +317,7 @@ const updateUser = async (data) => {
 };
 
 module.exports = {
+  getGroups,
   getAllUsers,
   createNewUser,
   updateUsers,

@@ -2,6 +2,7 @@ import express from "express";
 const router = express.Router();
 import apiController from "../Controllers/apiController";
 import userController from "../Controllers/userController";
+import roleController from "../Controllers/roleController";
 import { checkUserJWT, checkUserPermission } from "../Middleware/JWTActions";
 
 const initWedRoutes = (app) => {
@@ -14,6 +15,16 @@ const initWedRoutes = (app) => {
   // user routes
   router.get("/account", userController.getUserAccount);
   router.put("/user/update", userController.updateUser);
+  router.get("/user/read", userController.readFunc);
+  router.get("/group/read", userController.readGroupFunc);
+  // roles routes
+  router.get("/role/read", roleController.readFunc);
+  router.get("/role/read-roles", roleController.readAllRoles);
+  router.post("/role/create", roleController.createFunc);
+  router.put("/role/update", roleController.updateFunc);
+  router.delete("/role/delete", roleController.deleteFunc);
+  router.get("/role/by-group/:groupId", roleController.getRoleByGroup);
+  router.post("/role/assign-to-group", roleController.assignRoleToGroup);
 
   //   router.put("/change-pass", apiController.handleChangePass);
   // rest API

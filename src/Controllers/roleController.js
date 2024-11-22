@@ -1,36 +1,12 @@
 import userApiService from "../Services/userApiService";
+import roleApiService from "../Services/roleApiService";
 
-const readGroupFunc = async (req, res) => {
-  try {
-    let data = await userApiService.getGroups();
-    return res.status(200).json({
-      EM: data.EM, // error message
-      EC: data.EC, // error code
-      DT: data.DT, //data
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      EM: "error from server", // error message
-      EC: "-1", // error code
-      DT: "", //data
-    });
-  }
-};
 const readFunc = async (req, res) => {
   try {
     if (req.query.page && req.query.limit) {
       let page = req.query.page;
       let limit = req.query.limit;
-
-      let data = await userApiService.getUserWithPagination(+page, +limit);
-      return res.status(200).json({
-        EM: data.EM, // error message
-        EC: data.EC, // error code
-        DT: data.DT, //data
-      });
-    } else {
-      let data = await userApiService.getAllUsers();
+      let data = await roleApiService.getAllRolesWithPaging(+page, +limit);
       return res.status(200).json({
         EM: data.EM, // error message
         EC: data.EC, // error code
@@ -47,9 +23,27 @@ const readFunc = async (req, res) => {
   }
 };
 
+const readAllRoles = async (req, res) => {
+  try {
+    let data = await roleApiService.getAllRoles();
+    return res.status(200).json({
+      EM: data.EM, // error message
+      EC: data.EC, // error code
+      DT: data.DT, //data
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      EM: "error from server", // error message
+      EC: "-1", // error code
+      DT: "", //data
+    });
+  }
+};
+
 const createFunc = async (req, res) => {
   try {
-    let data = await userApiService.createNewUser(req.body);
+    let data = await roleApiService.createNewRoles(req.body);
     return res.status(200).json({
       EM: data.EM, // error message
       EC: data.EC, // error code
@@ -85,7 +79,7 @@ const updateFunc = async (req, res) => {
 
 const deleteFunc = async (req, res) => {
   try {
-    let data = await userApiService.deleteUser(req.body.id);
+    let data = await roleApiService.deleteRole(req.body.id);
     return res.status(200).json({
       EM: data.EM, // error message
       EC: data.EC, // error code
@@ -101,35 +95,10 @@ const deleteFunc = async (req, res) => {
   }
 };
 
-const getUserAccount = async (req, res) => {
-  if (req.token) {
-    return res.status(200).json({
-      EM: "ok", // error message
-      EC: 0, // error code
-      DT: {
-        access_token: req.token,
-        groupWithRoles: req.user.groupWithRoles,
-        email: req.user.email,
-        username: req.user.username,
-        firstName: req.user.firstName,
-        lastName: req.user.lastName,
-        phone: req.user.phone,
-        gender: req.user.gender,
-        avatar: req.user.avatar,
-        address: req.user.address,
-      }, //data
-    });
-  }
-  return res.status(200).json({
-    EM: "not user", // error message
-    EC: 1, // error code
-    DT: [],
-  });
-};
-
-const getUserByEmail = async (req, res) => {
+const getRoleByGroup = async (req, res) => {
   try {
-    let data = await userApiService.getUserByEmail(req.query.email);
+    let id = req.params.groupId;
+    let data = await roleApiService.getRoleByGroup(id);
     return res.status(200).json({
       EM: data.EM, // error message
       EC: data.EC, // error code
@@ -145,34 +114,10 @@ const getUserByEmail = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
+const assignRoleToGroup = async (req, res) => {
   try {
-    let data = await userApiService.updateUser(req.body);
-    // set cookie
-    if (data && data.DT && data.DT.access_token) {
-      res.cookie("jwt", data.DT.access_token, {
-        httpOnly: true,
-        maxAge: 60 * 60 * 1000,
-      });
-    }
-    return res.status(200).json({
-      EM: data.EM, // error message
-      EC: data.EC, // error code
-      DT: data.DT, //data
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      EM: "error from server", // error message
-      EC: "-1", // error code
-      DT: "", //data
-    });
-  }
-};
-
-const getJobRecruitment = async (req, res) => {
-  try {
-    let data = await userApiService.getJobRecruitment(req.query.email);
+    let id = req.params.groupId;
+    let data = await roleApiService.assignRoleToGroup(req.body.data);
     return res.status(200).json({
       EM: data.EM, // error message
       EC: data.EC, // error code
@@ -189,13 +134,11 @@ const getJobRecruitment = async (req, res) => {
 };
 
 module.exports = {
-  readGroupFunc,
   readFunc,
   createFunc,
   updateFunc,
   deleteFunc,
-  getUserAccount,
-  getUserByEmail,
-  updateUser,
-  getJobRecruitment,
+  getRoleByGroup,
+  assignRoleToGroup,
+  readAllRoles,
 };

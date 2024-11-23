@@ -7,8 +7,8 @@ import { checkUserJWT, checkUserPermission } from "../Middleware/JWTActions";
 
 const initWedRoutes = (app) => {
   app.use(express.json());
-  // router.all("*", checkUserJWT, checkUserPermission);
-  router.all("*", checkUserJWT);
+  router.all("*", checkUserJWT, checkUserPermission);
+  // router.all("*", checkUserJWT);
   router.post("/register", apiController.handleRegister);
   router.post("/login", apiController.handleLogin);
   router.post("/logout", apiController.handleLogout);

@@ -65,39 +65,81 @@ const checkUserJWT = (req, res, next) => {
   }
 };
 
+// const checkUserPermission = (req, res, next) => {
+//   if (nonSecurePaths.includes(req.path) || req.path === "/account")
+//     return next();
+
+//   if (req.user) {
+//     let email = req.user.email;
+//     let roles = req.user.groupWithRoles.roles;
+//     let currentUrl = req.path;
+//     if (!roles || roles.length === 0) {
+//       return res.status(403).json({
+//         EM: -1,
+//         DT: "",
+//         EM: `You don't have permission to access this resource...`,
+//       });
+//     }
+
+//     let canAccess = roles.some(
+//       (item) => item.url === currentUrl || currentUrl.includes(item.url)
+//     );
+//     if (canAccess === true) {
+//       next();
+//     } else {
+//       return res.status(403).json({
+//         EM: -1,
+//         DT: "",
+//         EM: `You don't have permission to access this resource...`,
+//       });
+//     }
+//   } else {
+//     return res.status(401).json({
+//       EM: -1,
+//       DT: "",
+//       EM: "Not authenticated the user",
+//     });
+//   }
+// };
+
 const checkUserPermission = (req, res, next) => {
   if (nonSecurePaths.includes(req.path) || req.path === "/account")
     return next();
 
   if (req.user) {
     let email = req.user.email;
-    let roles = req.user.groupWithRoles.Roles;
+    let roles = req.user.groupWithRoles.roles || []; // Đảm bảo roles là một mảng
     let currentUrl = req.path;
-    if (!roles || roles.length === 0) {
+
+    // Lọc bỏ các phần tử null
+    roles = roles.filter((role) => role !== null);
+
+    if (roles.length === 0) {
       return res.status(403).json({
-        EM: -1,
-        DT: "",
         EM: `You don't have permission to access this resource...`,
+        EC: -1,
+        DT: "",
       });
     }
 
+    // Kiểm tra quyền truy cập
     let canAccess = roles.some(
       (item) => item.url === currentUrl || currentUrl.includes(item.url)
     );
-    if (canAccess === true) {
+    if (canAccess) {
       next();
     } else {
       return res.status(403).json({
-        EM: -1,
-        DT: "",
         EM: `You don't have permission to access this resource...`,
+        EC: -1,
+        DT: "",
       });
     }
   } else {
     return res.status(401).json({
-      EM: -1,
-      DT: "",
       EM: "Not authenticated the user",
+      EC: -1,
+      DT: "",
     });
   }
 };

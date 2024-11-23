@@ -90,16 +90,26 @@ const getRoleByGroup = async (id) => {
       };
     }
 
-    let group = await db.groups
-      .findById(id)
-      .select("id name description")
-      .populate("roles", "id url description") // Liên kết với Role
+    const groupRoles = await db.group_role.find({ groupId: id }).lean();
+
+    if (!groupRoles || groupRoles.length === 0) {
+      return {
+        EM: "No roles found for this group",
+        EC: 0,
+        DT: [],
+      };
+    }
+
+    const roleIds = groupRoles.map((gr) => gr.roleId);
+    const roles = await db.roles
+      .find({ _id: { $in: roleIds } })
+      .select("_id url description")
       .lean();
 
     return {
       EM: "Get Role by group succeeds...",
       EC: 0,
-      DT: group,
+      DT: roles,
     };
   } catch (error) {
     console.log(error);
@@ -109,16 +119,17 @@ const getRoleByGroup = async (id) => {
 
 const assignRoleToGroup = async (data) => {
   try {
-    // Xóa các bản ghi cũ trong bảng group_roles
-    await db.groups.updateOne(
-      { _id: data.groupId },
-      { $set: { roles: [] } } // Reset roles cho group
-    );
+    const { groupId, groupRoles } = data;
 
-    // Cập nhật roles mới cho group
-    const group = await db.groups.findById(data.groupId);
-    group.roles = data.groupRoles; // groupRoles là mảng các id của roles
-    await group.save();
+    // Xóa tất cả các liên kết roles với groupId hiện tại
+    await db.group_role.deleteMany({ groupId });
+
+    // Tạo liên kết mới
+    const newGroupRoles = groupRoles.map((role) => ({
+      groupId,
+      roleId: role.roleId, // Assuming `roleId` is a field in the `groupRoles` array
+    }));
+    await db.group_role.insertMany(newGroupRoles);
 
     return {
       EM: "Assign Roles to Group succeeds...",
@@ -126,8 +137,8 @@ const assignRoleToGroup = async (data) => {
       DT: [],
     };
   } catch (error) {
-    console.log(error);
-    return { EM: "something wrong with service", EC: 1, DT: [] };
+    console.error(error);
+    return { EM: "Something went wrong with the service", EC: 1, DT: [] };
   }
 };
 

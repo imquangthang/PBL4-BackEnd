@@ -1,9 +1,9 @@
 import express from "express";
 const router = express.Router();
-import apiController from "../Controllers/apiController";
-import userController from "../Controllers/userController";
-import roleController from "../Controllers/roleController";
-import { checkUserJWT, checkUserPermission } from "../Middleware/JWTActions";
+import apiController from "../Controllers/apiController.js";
+import userController from "../Controllers/userController.js";
+import roleController from "../Controllers/roleController.js";
+import { checkUserJWT, checkUserPermission } from "../Middleware/JWTActions.js";
 
 const initWedRoutes = (app) => {
   app.use(express.json());

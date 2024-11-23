@@ -1,8 +1,8 @@
 require("dotenv").config();
-import db from "../Models/index";
+import db from "../Models/index.js";
 import bcrypt from "bcryptjs";
-import { getGroupWithRoles } from "../Services/JWTService";
-import { createJWT } from "../Middleware/JWTActions";
+import { getGroupWithRoles } from "../Services/JWTService.js";
+import { createJWT } from "../Middleware/JWTActions.js";
 
 const salt = bcrypt.genSaltSync(10);
 

@@ -1,5 +1,5 @@
-import userApiService from "../Services/userApiService";
-import roleApiService from "../Services/roleApiService";
+import userApiService from "../Services/userApiService.js";
+import roleApiService from "../Services/roleApiService.js";
 
 const readFunc = async (req, res) => {
   try {

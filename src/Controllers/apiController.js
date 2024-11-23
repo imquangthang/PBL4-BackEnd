@@ -1,5 +1,5 @@
 // import changePassService from "../service/changePassService";
-import loginRegisterService from "../Services/loginRegisterService";
+import loginRegisterService from "../Services/loginRegisterService.js";
 
 const testApi = (req, res) => {
   return res.status(200).json({

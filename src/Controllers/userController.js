@@ -1,4 +1,4 @@
-import userApiService from "../Services/userApiService";
+import userApiService from "../Services/userApiService.js";
 
 const readGroupFunc = async (req, res) => {
   try {

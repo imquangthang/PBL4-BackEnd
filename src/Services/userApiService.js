@@ -1,12 +1,12 @@
 require("dotenv").config();
-import db from "../Models/index";
+import db from "../Models/index.js";
 import {
   hashUserPassword,
   checkEmailExist,
   checkPhoneExist,
-} from "./loginRegisterService";
-import { getGroupWithRoles } from "../Services/JWTService";
-import { createJWT } from "../Middleware/JWTActions";
+} from "./loginRegisterService.js";
+import { getGroupWithRoles } from "../Services/JWTService.js";
+import { createJWT } from "../Middleware/JWTActions.js";
 
 const getGroups = async () => {
   try {

@@ -1,4 +1,4 @@
-import db from "../Models/index";
+import db from "../Models/index.js";
 
 const createNewRoles = async (roles) => {
   try {

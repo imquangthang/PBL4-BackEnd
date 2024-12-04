@@ -1,4 +1,5 @@
 import userApiService from "../Services/userApiService";
+import { verifyToken } from "../Middleware/JWTActions";
 
 const readGroupFunc = async (req, res) => {
   try {
@@ -170,9 +171,31 @@ const updateUser = async (req, res) => {
   }
 };
 
-const getJobRecruitment = async (req, res) => {
+const createHealthRecord = async (req, res) => {
   try {
-    let data = await userApiService.getJobRecruitment(req.query.email);
+    let decoded = verifyToken(req.token);
+
+    let data = await userApiService.createHealthRecord(decoded.id, req.body);
+    return res.status(200).json({
+      EM: data.EM, // error message
+      EC: data.EC, // error code
+      DT: data.DT, //data
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      EM: "error from server", // error message
+      EC: "-1", // error code
+      DT: "", //data
+    });
+  }
+};
+
+const getHealthRecordByUser = async (req, res) => {
+  try {
+    let decoded = verifyToken(req.token);
+
+    let data = await userApiService.getHealthRecordByUser(decoded.id);
     return res.status(200).json({
       EM: data.EM, // error message
       EC: data.EC, // error code
@@ -197,5 +220,6 @@ module.exports = {
   getUserAccount,
   getUserByEmail,
   updateUser,
-  getJobRecruitment,
+  createHealthRecord,
+  getHealthRecordByUser,
 };

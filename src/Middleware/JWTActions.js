@@ -145,6 +145,7 @@ const checkUserPermission = (req, res, next) => {
 };
 
 module.exports = {
+  extractToken,
   createJWT,
   verifyToken,
   checkUserJWT,

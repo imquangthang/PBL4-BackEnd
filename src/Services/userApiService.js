@@ -69,7 +69,7 @@ const getUserWithPagination = async (page, limit) => {
         // .select("id username email phone sex address")
         .populate({
           path: "groupId", // Trường tham chiếu đến Group trong schema
-          select: "name description id", // Chỉ lấy các trường cần thiết của Group
+          select: "_id name description", // Chỉ lấy các trường cần thiết của Group
         })
         .skip(offset)
         .limit(limit)
@@ -270,7 +270,7 @@ const updateUser = async (data) => {
 
       // Lưu lại thay đổi
       await user.save();
-      
+
       user = await db.accounts.findOne({ email: data.email }).exec();
       let groupWithRoles = await getGroupWithRoles(user);
       let payload = {
@@ -316,6 +316,46 @@ const updateUser = async (data) => {
   }
 };
 
+const createHealthRecord = async (id, data) => {
+  try {
+    await db.HealthRecord.create({
+      accountId: id,
+      ecg_analysis: data.ecgData,
+      ecg_type: data.ecgType,
+    });
+    return {
+      EM: "Create Health Record succeeds",
+      EC: 0,
+      DT: [],
+    };
+  } catch (error) {
+    console.log(error);
+    return { EM: "something wrong with service", EC: 1, DT: [] };
+  }
+};
+
+const getHealthRecordByUser = async (id) => {
+  try {
+    const data = await db.HealthRecord.find({ accountId: id }).sort({
+      created_at: -1,
+    });
+
+    return {
+      EM: "Get group success", // Thông báo thành công
+      EC: 0, // Error code = 0 (không lỗi)
+      DT: data, // Trả về dữ liệu nhóm
+    };
+  } catch (error) {
+    console.error("Error in getGroups service:", error);
+
+    return {
+      EM: "Error from service", // Thông báo lỗi
+      EC: 1, // Error code = 1 (có lỗi)
+      DT: [], // Không có dữ liệu
+    };
+  }
+};
+
 module.exports = {
   getGroups,
   getAllUsers,
@@ -325,4 +365,6 @@ module.exports = {
   getUserWithPagination,
   getUserByEmail,
   updateUser,
+  createHealthRecord,
+  getHealthRecordByUser,
 };

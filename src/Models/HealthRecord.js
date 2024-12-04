@@ -14,10 +14,10 @@ const HealthRecordSchema = new Schema(
       type: String,
       required: true,
     },
-    date: {
-      type: Date,
-      required: true,
-    },
+    ecg_type:{
+      type: Schema.Types.Object,
+      
+    }
   },
   {
     timestamps: {

@@ -177,18 +177,9 @@ const updateUsers = async (data) => {
 
 const deleteUser = async (id) => {
   try {
-    let user = await db.User.findOne({
-      where: { id: id },
-    });
-    // xóa user nếu là company
-    let company = await db.Company.findOne({
-      where: { idAccount: id },
-    });
-    if (company) {
-      await company.destroy();
-    }
+    let user = await db.accounts.findById(id);
     if (user) {
-      await user.destroy();
+      await user.deleteOne();
 
       return {
         EM: "DELETE user success",

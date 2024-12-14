@@ -15,6 +15,7 @@ const initWedRoutes = (app) => {
   // user routes
   router.get("/account", userController.getUserAccount);
   router.put("/user/update", userController.updateUser);
+  router.delete("/user/delete", userController.deleteFunc);
   router.get("/user/read", userController.readFunc);
   router.get("/group/read", userController.readGroupFunc);
   router.post("/user/create-healthRecord", userController.createHealthRecord);

@@ -195,7 +195,27 @@ const getHealthRecordByUser = async (req, res) => {
   try {
     let decoded = verifyToken(req.token);
 
-    let data = await userApiService.getHealthRecordByUser(decoded.id);
+    let data = await userApiService.getHealthRecord(decoded.id);
+    return res.status(200).json({
+      EM: data.EM, // error message
+      EC: data.EC, // error code
+      DT: data.DT, //data
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      EM: "error from server", // error message
+      EC: "-1", // error code
+      DT: "", //data
+    });
+  }
+};
+
+const getHealthRecordByAdmin = async (req, res) => {
+  try {
+    let id = req.params.id;
+
+    let data = await userApiService.getHealthRecord(id);
     return res.status(200).json({
       EM: data.EM, // error message
       EC: data.EC, // error code
@@ -222,4 +242,5 @@ module.exports = {
   updateUser,
   createHealthRecord,
   getHealthRecordByUser,
+  getHealthRecordByAdmin,
 };

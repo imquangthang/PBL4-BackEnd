@@ -23,6 +23,10 @@ const initWedRoutes = (app) => {
     "/user/history-healthRecord",
     userController.getHealthRecordByUser
   );
+  router.get(
+    "/user/history-healthRecord/:id",
+    userController.getHealthRecordByAdmin
+  );
   // roles routes
   router.get("/role/read", roleController.readFunc);
   router.get("/role/read-roles", roleController.readAllRoles);

@@ -325,7 +325,7 @@ const createHealthRecord = async (id, data) => {
   }
 };
 
-const getHealthRecordByUser = async (id) => {
+const getHealthRecord = async (id) => {
   try {
     const data = await db.HealthRecord.find({ accountId: id }).sort({
       created_at: -1,
@@ -357,5 +357,5 @@ module.exports = {
   getUserByEmail,
   updateUser,
   createHealthRecord,
-  getHealthRecordByUser,
+  getHealthRecord,
 };

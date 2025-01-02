@@ -7,6 +7,7 @@ import {
 } from "./loginRegisterService.js";
 import { getGroupWithRoles } from "../Services/JWTService.js";
 import { createJWT } from "../Middleware/JWTActions.js";
+import mongoose from "mongoose";
 
 const getGroups = async () => {
   try {
@@ -347,6 +348,51 @@ const getHealthRecord = async (id) => {
   }
 };
 
+const getStatistic = async (id) => {
+  try {
+    const objectId = new mongoose.Types.ObjectId(id);
+    const data = await db.HealthRecord.aggregate([
+      {
+        $match: {
+          accountId: objectId,
+        },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$created_at" } },
+          value: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+      {
+        $project: {
+          _id: 0,
+          date: "$_id",
+          value: 1,
+        },
+      },
+    ]);
+
+    console.log(data); // Xem thử có bản ghi nào không
+
+    return {
+      EM: "Get statistic success", // Thông báo thành công
+      EC: 0, // Error code = 0 (không lỗi)
+      DT: data, // Trả về dữ liệu dạng [{ date, value }]
+    };
+  } catch (error) {
+    console.error("Error in getStatistic service:", error);
+
+    return {
+      EM: "Error from service", // Thông báo lỗi
+      EC: 1, // Error code = 1 (có lỗi)
+      DT: [], // Không có dữ liệu
+    };
+  }
+};
+
 module.exports = {
   getGroups,
   getAllUsers,
@@ -358,4 +404,5 @@ module.exports = {
   updateUser,
   createHealthRecord,
   getHealthRecord,
+  getStatistic,
 };

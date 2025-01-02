@@ -27,6 +27,7 @@ const initWedRoutes = (app) => {
     "/user/history-healthRecord/:id",
     userController.getHealthRecordByAdmin
   );
+  router.get("/user/statistic/:id", userController.getStatisticWithId);
   // roles routes
   router.get("/role/read", roleController.readFunc);
   router.get("/role/read-roles", roleController.readAllRoles);

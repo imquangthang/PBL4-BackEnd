@@ -46,6 +46,14 @@ const AccountsSchema = new Schema(
     avatar: {
       type: String,
     },
+    hospital_id: {
+      type: Schema.Types.ObjectId,
+      ref: "accounts",
+    },
+    faculty_id: {
+      type: Schema.Types.ObjectId,
+      ref: "faculty", // Liên kết với bảng "faculty" nếu có
+    },
   },
   {
     timestamps: {

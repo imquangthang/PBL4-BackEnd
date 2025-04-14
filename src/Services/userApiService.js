@@ -258,7 +258,7 @@ const updateUser = async (data) => {
       user.gender = data.gender;
       user.address = data.address;
       user.avatar = data.avatar;
-      user.groupId = data.group;
+      user.groupId = data.group ? data.group : user.groupId; // Giữ nguyên groupId nếu không có giá trị mới
 
       // Lưu lại thay đổi
       await user.save();
@@ -374,8 +374,6 @@ const getStatistic = async (id) => {
         },
       },
     ]);
-
-    console.log(data); // Xem thử có bản ghi nào không
 
     return {
       EM: "Get statistic success", // Thông báo thành công

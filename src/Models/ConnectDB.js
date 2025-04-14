@@ -6,6 +6,9 @@ import {
   createTableRoles,
   createTableGroups,
   createTableHealthRecord,
+  createTableFaculty,
+  createTableAppointment,
+  createTableMedicalRecord,
 } from "./CreateTable.js";
 import mongoose from "mongoose";
 
@@ -26,6 +29,9 @@ const connectDB = async () => {
     // createTableRoles();
     // createTableGroup_Role();
     // createTableHealthRecord();
+    createTableFaculty();
+    createTableAppointment();
+    createTableMedicalRecord();
   } catch (error) {
     console.log(error.message);
   }

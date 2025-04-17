@@ -7,11 +7,11 @@ const AccountsSchema = new Schema(
   {
     firstName: {
       type: String,
-      required: true, // Ràng buộc giá trị bắt buộc
+      required: false, // Ràng buộc giá trị bắt buộc
     },
     lastName: {
       type: String,
-      required: true,
+      required: false,
     },
     email: {
       type: String,

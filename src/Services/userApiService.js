@@ -4,6 +4,7 @@ import {
   hashUserPassword,
   checkEmailExist,
   checkPhoneExist,
+  checkUsernameExist,
 } from "./loginRegisterService.js";
 import { getGroupWithRoles } from "../Services/JWTService.js";
 import { createJWT } from "../Middleware/JWTActions.js";
@@ -101,38 +102,137 @@ const getUserWithPagination = async (page, limit) => {
   }
 };
 
-const createNewUser = async (data) => {
+const getAllHospital = async () => {
   try {
-    // check email/phone number
-    let isEmailExist = await checkEmailExist(data.email);
+    let role = await db.groups.findOne({
+      attributes: ["id"],
+      where: { name: "hospital" },
+    });
+
+    let users = await db.User.findAll({
+      where: { groupId: role.id },
+    });
+    if (users) {
+      return {
+        EM: "get data success",
+        EC: 0,
+        DT: users,
+      };
+    } else {
+      return {
+        EM: "get data success",
+        EC: 0,
+        DT: [],
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      EM: "something wrong with service",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const getHospitalWithPagination = async (page, limit) => {
+  try {
+    const offset = (page - 1) * limit;
+
+    let role = await db.groups.findOne({ name: "hospital" }).select("_id");
+    // Nếu không tìm thấy role, trả về thông báo lỗi
+    if (!role) {
+      return {
+        EM: "not find groups id!",
+        EC: 0,
+        DT: [],
+      };
+    }
+
+    // Tìm user với phân trang và bao gồm thông tin từ Group
+    const [users, count] = await Promise.all([
+      db.accounts
+        .find({ groupId: role._id })
+        .populate({
+          path: "groupId",
+          select: "_id name description",
+        })
+        .skip(offset)
+        .limit(limit)
+        .sort({ _id: -1 }), // Dùng _id thay vì id
+      db.accounts.countDocuments({ groupId: role._id }), // Đếm có điều kiện
+    ]);
+
+    const totalPages = Math.ceil(count / limit);
+
+    const data = {
+      totalRows: count,
+      totalPages: totalPages,
+      users: users,
+    };
+
+    return {
+      EM: "FETCH Ok!",
+      EC: 0,
+      DT: data,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      EM: "something wrong with service",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const createHospital = async (rawUserData) => {
+  try {
+    // check email/phonenumber are exist
+    let isEmailExist = await checkEmailExist(rawUserData.email);
     if (isEmailExist === true) {
       return {
         EM: "The email is a already exist",
         EC: 1,
-        DT: "email",
       };
     }
-    let isPhoneExist = await checkPhoneExist(data.phone);
+    let isPhoneExist = await checkPhoneExist(rawUserData.phone);
     if (isPhoneExist === true) {
       return {
         EM: "The phone number is a already exist",
-        EC: 1,
-        DT: "phone",
+        EC: 2,
+      };
+    }
+    let isUsernameExits = await checkUsernameExist(rawUserData.username);
+    if (isUsernameExits === true) {
+      return {
+        EM: "The Username is a already exist",
+        EC: 3,
       };
     }
     // hash user password
-    let hashPassword = hashUserPassword(data.password);
+    let hashPassword = hashUserPassword(rawUserData.password);
 
     // create new user
-    await db.User.create({ ...data, password: hashPassword });
+    await db.accounts.create({
+      email: rawUserData.email,
+      password: hashPassword,
+      username: rawUserData.username,
+      phone: rawUserData.phone,
+      groupId: rawUserData.group,
+      address: rawUserData.address,
+    });
+
     return {
-      EM: "CREATE Ok!",
+      EM: "A user is a created successfully!",
       EC: 0,
-      DT: [],
     };
   } catch (error) {
-    console.log(error);
-    return { EM: "something wrong with service", EC: 1, DT: [] };
+    console.log(">> check error: ", error);
+    return {
+      EM: "Something wrongs in service....",
+      EC: -2,
+    };
   }
 };
 
@@ -394,7 +494,7 @@ const getStatistic = async (id) => {
 module.exports = {
   getGroups,
   getAllUsers,
-  createNewUser,
+  createHospital,
   updateUsers,
   deleteUser,
   getUserWithPagination,
@@ -403,4 +503,6 @@ module.exports = {
   createHealthRecord,
   getHealthRecord,
   getStatistic,
+  getAllHospital,
+  getHospitalWithPagination,
 };

@@ -29,9 +29,9 @@ const connectDB = async () => {
     // createTableRoles();
     // createTableGroup_Role();
     // createTableHealthRecord();
-    createTableFaculty();
-    createTableAppointment();
-    createTableMedicalRecord();
+    // createTableFaculty();
+    // createTableAppointment();
+    // createTableMedicalRecord();
   } catch (error) {
     console.log(error.message);
   }

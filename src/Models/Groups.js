@@ -8,6 +8,7 @@ const GroupsSchema = new Schema(
     name: {
       type: String,
       required: true, // Ràng buộc giá trị bắt buộc
+      unique: true, // Đảm bảo không trùng lặp tên nhóm
     },
     description: {
       type: String,

@@ -135,6 +135,7 @@ const handleUserLogin = async (rawData) => {
           DT: {
             access_token: token,
             groupWithRoles,
+            id: user.id,
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
@@ -168,4 +169,5 @@ module.exports = {
   hashUserPassword,
   checkEmailExist,
   checkPhoneExist,
+  checkUsernameExist,
 };

@@ -3,6 +3,7 @@ const router = express.Router();
 import apiController from "../Controllers/apiController.js";
 import userController from "../Controllers/userController.js";
 import roleController from "../Controllers/roleController.js";
+import hospitalController from "../Controllers/hospitalController.js";
 import { checkUserJWT, checkUserPermission } from "../Middleware/JWTActions.js";
 
 const initWedRoutes = (app) => {
@@ -14,10 +15,12 @@ const initWedRoutes = (app) => {
   router.post("/logout", apiController.handleLogout);
   // user routes
   router.get("/account", userController.getUserAccount);
+  router.post("/user/create", userController.createHospital);
   router.put("/user/update", userController.updateUser);
   router.delete("/user/delete", userController.deleteFunc);
   router.get("/user/read", userController.readFunc);
   router.get("/group/read", userController.readGroupFunc);
+  router.get("/hospital/read", userController.readHospitalFunc);
   router.post("/user/create-healthRecord", userController.createHealthRecord);
   router.get(
     "/user/history-healthRecord",
@@ -36,6 +39,17 @@ const initWedRoutes = (app) => {
   router.delete("/role/delete", roleController.deleteFunc);
   router.get("/role/by-group/:groupId", roleController.getRoleByGroup);
   router.post("/role/assign-to-group", roleController.assignRoleToGroup);
+
+  // hospital routes
+  router.post("/hospital/create-faculty", hospitalController.createFaculty);
+  router.get("/hospital/read-faculty", hospitalController.readFacultyFunc);
+  router.put(
+    "/hospital/update-faculty",
+    hospitalController.updateCurrentFaculty
+  );
+  router.get("/hospital/read-faculty", hospitalController.readFacultyFunc);
+  router.post("/hospital/create-doctor", hospitalController.createDoctor);
+  router.get("/hospital/read-doctor", hospitalController.readDoctor);
 
   //   router.put("/change-pass", apiController.handleChangePass);
   // rest API

@@ -1,4 +1,5 @@
 import userApiService from "../Services/userApiService";
+import loginRegisterService from "../Services/loginRegisterService.js";
 import { verifyToken } from "../Middleware/JWTActions";
 
 const readGroupFunc = async (req, res) => {
@@ -48,18 +49,67 @@ const readFunc = async (req, res) => {
   }
 };
 
-const createFunc = async (req, res) => {
+const readHospitalFunc = async (req, res) => {
   try {
-    let data = await userApiService.createNewUser(req.body);
-    return res.status(200).json({
-      EM: data.EM, // error message
-      EC: data.EC, // error code
-      DT: data.DT, //data
-    });
+    if (req.query.page && req.query.limit) {
+      let page = req.query.page;
+      let limit = req.query.limit;
+
+      let data = await userApiService.getHospitalWithPagination(+page, +limit);
+      return res.status(200).json({
+        EM: data.EM, // error message
+        EC: data.EC, // error code
+        DT: data.DT, //data
+      });
+    } else {
+      let data = await userApiService.getAllHospital();
+      return res.status(200).json({
+        EM: data.EM, // error message
+        EC: data.EC, // error code
+        DT: data.DT, //data
+      });
+    }
   } catch (error) {
     console.log(error);
     return res.status(500).json({
       EM: "error from server", // error message
+      EC: "-1", // error code
+      DT: "", //data
+    });
+  }
+};
+
+const createHospital = async (req, res) => {
+  try {
+    // req.body: email,phone,username,password,
+    if (!req.body.email || !req.body.username || !req.body.password) {
+      return res.status(200).json({
+        EM: "missing required parameters", // error message
+        EC: "1", // error code
+        DT: "", //data
+      });
+    }
+
+    if (req.body.password && req.body.password.length < 4) {
+      return res.status(200).json({
+        EM: "Your password must have more than 3 letter", // error message
+        EC: "1", // error code
+        DT: "", //data
+      });
+    }
+
+    // service: create user
+    let data = await userApiService.createHospital(req.body);
+
+    return res.status(200).json({
+      EM: data.EM, // error message
+      EC: data.EC, // error code
+      DT: "", //data
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      EM: "error form server", // error message
       EC: "-1", // error code
       DT: "", //data
     });
@@ -110,6 +160,7 @@ const getUserAccount = async (req, res) => {
       DT: {
         access_token: req.token,
         groupWithRoles: req.user.groupWithRoles,
+        id: req.user.id,
         email: req.user.email,
         username: req.user.username,
         firstName: req.user.firstName,
@@ -254,7 +305,7 @@ const getStatisticWithId = async (req, res) => {
 module.exports = {
   readGroupFunc,
   readFunc,
-  createFunc,
+  createHospital,
   updateFunc,
   deleteFunc,
   getUserAccount,
@@ -264,4 +315,5 @@ module.exports = {
   getHealthRecordByUser,
   getHealthRecordByAdmin,
   getStatisticWithId,
+  readHospitalFunc,
 };

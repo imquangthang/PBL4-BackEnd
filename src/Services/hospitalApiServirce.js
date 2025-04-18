@@ -495,20 +495,8 @@ const getAllMedicalRecord = async (hospital_id) => {
 
 const getMedicalRecordWithPagination = async (hospital_id, page, limit) => {
   try {
-    // get id group Doctor
-    let group = await db.groups.findOne({
-      name: "staff",
-    });
-    if (!group) {
-      return {
-        EM: "Group not found",
-        EC: 4,
-      };
-    }
-
     const offset = (page - 1) * limit;
 
-    // Tìm user với phân trang và bao gồm thông tin từ Group
     const [MedicalRecord, count] = await Promise.all([
       db.MedicalRecords.find({ hospital_id: hospital_id })
         .populate([

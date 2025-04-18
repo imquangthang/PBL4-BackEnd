@@ -228,6 +228,40 @@ const readStaff = async (req, res) => {
   }
 };
 
+const getMedicalRecord = async (req, res) => {
+  try {
+    let page = req.query.page;
+    let limit = req.query.limit;
+    let hospital_id = req.query.hospital_id;
+    if (page && limit && hospital_id) {
+      let data = await hospitalApiService.getMedicalRecordWithPagination(
+        hospital_id,
+        +page,
+        +limit
+      );
+      return res.status(200).json({
+        EM: data.EM, // error message
+        EC: data.EC, // error code
+        DT: data.DT, //data
+      });
+    } else {
+      let data = await hospitalApiService.getAllMedicalRecord(hospital_id);
+      return res.status(200).json({
+        EM: data.EM, // error message
+        EC: data.EC, // error code
+        DT: data.DT, //data
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      EM: "error from server", // error message
+      EC: "-1", // error code
+      DT: "", //data
+    });
+  }
+};
+
 module.exports = {
   createFaculty,
   readFacultyFunc,
@@ -236,4 +270,5 @@ module.exports = {
   readDoctor,
   createStaff,
   readStaff,
+  getMedicalRecord,
 };

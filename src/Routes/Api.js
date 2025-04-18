@@ -4,6 +4,7 @@ import apiController from "../Controllers/apiController.js";
 import userController from "../Controllers/userController.js";
 import roleController from "../Controllers/roleController.js";
 import hospitalController from "../Controllers/hospitalController.js";
+import doctorController from "../Controllers/doctorController.js";
 import { checkUserJWT, checkUserPermission } from "../Middleware/JWTActions.js";
 
 const initWedRoutes = (app) => {
@@ -57,6 +58,8 @@ const initWedRoutes = (app) => {
     hospitalController.getMedicalRecord
   );
 
+  //doctor routes
+  router.get("/doctor/read-medicalRecord", doctorController.getMedicalRecord);
   //   router.put("/change-pass", apiController.handleChangePass);
   // rest API
   // GET - R, POST - C, PUT - U, DELETE - D

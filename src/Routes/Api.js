@@ -52,6 +52,10 @@ const initWedRoutes = (app) => {
   router.get("/hospital/read-doctor", hospitalController.readDoctor);
   router.post("/hospital/create-staff", hospitalController.createStaff);
   router.get("/hospital/read-staff", hospitalController.readStaff);
+  router.get(
+    "/hospital/read-medicalRecord",
+    hospitalController.getMedicalRecord
+  );
 
   //   router.put("/change-pass", apiController.handleChangePass);
   // rest API

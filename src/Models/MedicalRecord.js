@@ -8,12 +8,17 @@ const MedicalRecordSchema = new Schema(
     doctor_id: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "accounts", // Đảm bảo không trùng lặp email
+      ref: "accounts",
     },
     patient_id: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "accounts", // Đảm bảo không trùng lặp email
+      ref: "accounts",
+    },
+    hospital_id: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "accounts",
     },
     diagnosis: {
       type: String,
@@ -34,5 +39,5 @@ const MedicalRecordSchema = new Schema(
 
 MedicalRecordSchema.plugin(mongoosePaginate);
 
-const MedicalRecord = mongoose.model("MedicalRecord", MedicalRecordSchema);
+const MedicalRecord = mongoose.model("MedicalRecords", MedicalRecordSchema);
 module.exports = MedicalRecord;

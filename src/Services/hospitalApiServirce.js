@@ -459,6 +459,99 @@ const getStaffWithPagination = async (hospital_id, page, limit) => {
   }
 };
 
+const getAllMedicalRecord = async (hospital_id) => {
+  try {
+    // get all hospital
+    let MedicalRecord = await db.MedicalRecords.find({
+      hospital_id: hospital_id,
+    }).populate([
+      {
+        path: "doctor_id",
+        select: "username",
+      },
+      {
+        path: "patient_id",
+        select: "username",
+      },
+    ]);
+    console.log("MedicalRecord: ", MedicalRecord);
+
+    if (MedicalRecord) {
+      return {
+        EM: "get data success",
+        EC: 0,
+        DT: MedicalRecord,
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      EM: "something wrong with service",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const getMedicalRecordWithPagination = async (hospital_id, page, limit) => {
+  try {
+    // get id group Doctor
+    let group = await db.groups.findOne({
+      name: "staff",
+    });
+    if (!group) {
+      return {
+        EM: "Group not found",
+        EC: 4,
+      };
+    }
+
+    const offset = (page - 1) * limit;
+
+    // Tìm user với phân trang và bao gồm thông tin từ Group
+    const [MedicalRecord, count] = await Promise.all([
+      db.MedicalRecords.find({ hospital_id: hospital_id })
+        .populate([
+          {
+            path: "doctor_id",
+            select: "username",
+          },
+          {
+            path: "patient_id",
+            select: "username",
+          },
+        ])
+        .skip(offset)
+        .limit(limit)
+        .sort({ _id: -1 }),
+      db.faculty.countDocuments({
+        hospital_id: hospital_id,
+      }), // Đếm có điều kiện
+    ]);
+
+    const totalPages = Math.ceil(count / limit);
+
+    const data = {
+      totalRows: count,
+      totalPages: totalPages,
+      MedicalRecord: MedicalRecord,
+    };
+
+    return {
+      EM: "FETCH Ok!",
+      EC: 0,
+      DT: data,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      EM: "something wrong with service",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
 module.exports = {
   createFaculty,
   getAllFaculty,
@@ -470,4 +563,6 @@ module.exports = {
   createStaff,
   getStaffWithPagination,
   getAllStaff,
+  getAllMedicalRecord,
+  getMedicalRecordWithPagination,
 };

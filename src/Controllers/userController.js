@@ -199,6 +199,8 @@ const getUserByEmail = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
+    console.log("updateUser", req.body);
+
     let data = await userApiService.updateUser(req.body);
     // set cookie
     if (data && data.DT && data.DT.access_token) {

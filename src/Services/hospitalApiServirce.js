@@ -1,4 +1,5 @@
 require("dotenv").config();
+import { raw } from "body-parser";
 import db from "../Models/index.js";
 import {
   hashUserPassword,
@@ -210,7 +211,7 @@ const createDoctor = async (rawUserData) => {
   }
 };
 
-const getAllHospital = async (hospital_id) => {
+const getAllDoctor = async (hospital_id) => {
   try {
     // get id group Doctor
     let group = await db.groups.findOne({
@@ -246,7 +247,7 @@ const getAllHospital = async (hospital_id) => {
   }
 };
 
-const getHospitalWithPagination = async (hospital_id, page, limit) => {
+const getDoctorWithPagination = async (hospital_id, page, limit) => {
   try {
     // get id group Doctor
     let group = await db.groups.findOne({
@@ -300,12 +301,173 @@ const getHospitalWithPagination = async (hospital_id, page, limit) => {
   }
 };
 
+const createStaff = async (rawUserData) => {
+  try {
+    console.log(rawUserData);
+
+    // check email/phonenumber are exist
+    let isEmailExist = await checkEmailExist(rawUserData.email);
+    if (isEmailExist === true) {
+      return {
+        EM: "The email is a already exist",
+        EC: 1,
+      };
+    }
+    let isPhoneExist = await checkPhoneExist(rawUserData.phone);
+    if (isPhoneExist === true) {
+      return {
+        EM: "The phone number is a already exist",
+        EC: 2,
+      };
+    }
+    let isUsernameExits = await checkUsernameExist(rawUserData.username);
+    if (isUsernameExits === true) {
+      return {
+        EM: "The Username is a already exist",
+        EC: 3,
+      };
+    }
+    // hash user password
+    let hashPassword = hashUserPassword(rawUserData.password);
+
+    // get id group Doctor
+    let group = await db.groups.findOne({
+      name: "staff",
+    });
+
+    if (!group) {
+      return {
+        EM: "Group not found",
+        EC: 4,
+      };
+    }
+
+    // create new user
+    await db.accounts.create({
+      email: rawUserData.email,
+      password: hashPassword,
+      username: rawUserData.username,
+      firstName: rawUserData.firstName,
+      lastName: rawUserData.lastName,
+      phone: rawUserData.phone,
+      address: rawUserData.address,
+      groupId: group._id,
+      faculty_id: rawUserData.faculty_id,
+      hospital_id: rawUserData.hospital_id,
+    });
+
+    return {
+      EM: "A doctor is a created successfully!",
+      EC: 0,
+    };
+  } catch (error) {
+    console.log(">> check error: ", error);
+    return {
+      EM: "Something wrongs in service....",
+      EC: -2,
+    };
+  }
+};
+
+const getAllStaff = async (hospital_id) => {
+  try {
+    // get id group Doctor
+    let group = await db.groups.findOne({
+      name: "staff",
+    });
+
+    if (!group) {
+      return {
+        EM: "Group not found",
+        EC: 4,
+      };
+    }
+    // get all hospital
+    let account = await db.accounts.find({
+      hospital_id: hospital_id,
+      groupId: group._id,
+    });
+
+    if (account) {
+      return {
+        EM: "get data success",
+        EC: 0,
+        DT: account,
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      EM: "something wrong with service",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const getStaffWithPagination = async (hospital_id, page, limit) => {
+  try {
+    // get id group Doctor
+    let group = await db.groups.findOne({
+      name: "staff",
+    });
+    if (!group) {
+      return {
+        EM: "Group not found",
+        EC: 4,
+      };
+    }
+
+    const offset = (page - 1) * limit;
+
+    // Tìm user với phân trang và bao gồm thông tin từ Group
+    const [staff, count] = await Promise.all([
+      db.accounts
+        .find({ hospital_id: hospital_id, groupId: group._id })
+        .populate({
+          path: "faculty_id", // Trường tham chiếu đến faculty_id trong schema
+          select: "_id name", // Chỉ lấy các trường cần thiết của Group
+        })
+        .skip(offset)
+        .limit(limit)
+        .sort({ _id: -1 }),
+      db.faculty.countDocuments({
+        hospital_id: hospital_id,
+      }), // Đếm có điều kiện
+    ]);
+
+    const totalPages = Math.ceil(count / limit);
+
+    const data = {
+      totalRows: count,
+      totalPages: totalPages,
+      staff: staff,
+    };
+
+    return {
+      EM: "FETCH Ok!",
+      EC: 0,
+      DT: data,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      EM: "something wrong with service",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
 module.exports = {
   createFaculty,
   getAllFaculty,
   getFacultylWithPagination,
   updateCurrentFaculty,
   createDoctor,
-  getHospitalWithPagination,
-  getAllHospital,
+  getDoctorWithPagination,
+  getAllDoctor,
+  createStaff,
+  getStaffWithPagination,
+  getAllStaff,
 };

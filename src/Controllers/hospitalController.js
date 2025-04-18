@@ -129,7 +129,7 @@ const readDoctor = async (req, res) => {
     let limit = req.query.limit;
     let hospital_id = req.query.hospital_id;
     if (page && limit && hospital_id) {
-      let data = await hospitalApiService.getHospitalWithPagination(
+      let data = await hospitalApiService.getDoctorWithPagination(
         hospital_id,
         +page,
         +limit
@@ -140,7 +140,78 @@ const readDoctor = async (req, res) => {
         DT: data.DT, //data
       });
     } else {
-      let data = await hospitalApiService.getAllHospital(hospital_id);
+      let data = await hospitalApiService.getAllDoctor(hospital_id);
+      return res.status(200).json({
+        EM: data.EM, // error message
+        EC: data.EC, // error code
+        DT: data.DT, //data
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      EM: "error from server", // error message
+      EC: "-1", // error code
+      DT: "", //data
+    });
+  }
+};
+
+const createStaff = async (req, res) => {
+  try {
+    // req.body: email,phone,username,password,
+    if (!req.body.email || !req.body.username || !req.body.password) {
+      return res.status(200).json({
+        EM: "missing required parameters", // error message
+        EC: "1", // error code
+        DT: "", //data
+      });
+    }
+
+    // if (req.body.password && req.body.password.length < 4) {
+    //   return res.status(200).json({
+    //     EM: "Your password must have more than 3 letter", // error message
+    //     EC: "1", // error code
+    //     DT: "", //data
+    //   });
+    // }
+
+    // service: create user
+    let data = await hospitalApiService.createStaff(req.body);
+
+    return res.status(200).json({
+      EM: data.EM, // error message
+      EC: data.EC, // error code
+      DT: "", //data
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      EM: "error form server", // error message
+      EC: "-1", // error code
+      DT: "", //data
+    });
+  }
+};
+
+const readStaff = async (req, res) => {
+  try {
+    let page = req.query.page;
+    let limit = req.query.limit;
+    let hospital_id = req.query.hospital_id;
+    if (page && limit && hospital_id) {
+      let data = await hospitalApiService.getStaffWithPagination(
+        hospital_id,
+        +page,
+        +limit
+      );
+      return res.status(200).json({
+        EM: data.EM, // error message
+        EC: data.EC, // error code
+        DT: data.DT, //data
+      });
+    } else {
+      let data = await hospitalApiService.getAllStaff(hospital_id);
       return res.status(200).json({
         EM: data.EM, // error message
         EC: data.EC, // error code
@@ -163,4 +234,6 @@ module.exports = {
   updateCurrentFaculty,
   createDoctor,
   readDoctor,
+  createStaff,
+  readStaff,
 };

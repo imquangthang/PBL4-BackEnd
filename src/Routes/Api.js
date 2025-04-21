@@ -31,6 +31,7 @@ const initWedRoutes = (app) => {
     "/user/history-healthRecord/:id",
     userController.getHealthRecordByAdmin
   );
+  router.post("/user/create-appointment", userController.createAppointment);
   router.get("/user/statistic/:id", userController.getStatisticWithId);
   // roles routes
   router.get("/role/read", roleController.readFunc);
@@ -60,6 +61,11 @@ const initWedRoutes = (app) => {
 
   //doctor routes
   router.get("/doctor/read-medicalRecord", doctorController.getMedicalRecord);
+  router.get("/doctor/read-doctor", doctorController.readDoctor);
+  router.get(
+    "/doctor/read-appointment",
+    doctorController.getAppointmentByDoctor
+  );
   //   router.put("/change-pass", apiController.handleChangePass);
   // rest API
   // GET - R, POST - C, PUT - U, DELETE - D

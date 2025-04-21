@@ -8,23 +8,28 @@ const AppointmentSchema = new Schema(
     patient_id: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "accounts", // Đảm bảo không trùng lặp email
+      ref: "accounts",
     },
     doctor_id: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "accounts", // Đảm bảo không trùng lặp email
+      ref: "accounts",
     },
     hospital_id: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "accounts", // Đảm bảo không trùng lặp email
+      ref: "accounts",
     },
     faculty_id: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "faculty", // Đảm bảo không trùng lặp email
+      ref: "faculty",
     },
+    // HealthRecord_id: {
+    //   type: Schema.Types.ObjectId,
+    //   required: true,
+    //   ref: "HealthRecord",
+    // },
     date: {
       type: Date,
       required: true,
@@ -36,6 +41,9 @@ const AppointmentSchema = new Schema(
     status: {
       type: String,
       required: true,
+    },
+    reason_reject: {
+      type: String,
     },
   },
   {

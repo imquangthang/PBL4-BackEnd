@@ -104,19 +104,23 @@ const getUserWithPagination = async (page, limit) => {
 
 const getAllHospital = async () => {
   try {
-    let role = await db.groups.findOne({
-      attributes: ["id"],
-      where: { name: "hospital" },
-    });
+    let role = await db.groups.findOne({ name: "hospital" }).select("_id");
+    if (!role) {
+      return {
+        EM: "not find groups id!",
+        EC: 0,
+        DT: [],
+      };
+    }
 
-    let users = await db.User.findAll({
-      where: { groupId: role.id },
+    let hospital = await db.accounts.find({
+      groupId: role._id,
     });
-    if (users) {
+    if (hospital) {
       return {
         EM: "get data success",
         EC: 0,
-        DT: users,
+        DT: hospital,
       };
     } else {
       return {
@@ -492,6 +496,28 @@ const getStatistic = async (id) => {
   }
 };
 
+const createAppointment = async (data) => {
+  try {
+    await db.appointment.create({
+      patient_id: data.patient,
+      doctor_id: data.doctor,
+      hospital_id: data.hospital,
+      faculty_id: data.faculty,
+      date: data.date,
+      reason: data.reason,
+      status: "Pending",
+    });
+    return {
+      EM: "Create Health Record succeeds",
+      EC: 0,
+      DT: [],
+    };
+  } catch (error) {
+    console.log(error);
+    return { EM: "something wrong with service", EC: 1, DT: [] };
+  }
+};
+
 module.exports = {
   getGroups,
   getAllUsers,
@@ -506,4 +532,5 @@ module.exports = {
   getStatistic,
   getAllHospital,
   getHospitalWithPagination,
+  createAppointment,
 };

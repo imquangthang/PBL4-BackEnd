@@ -179,10 +179,72 @@ const getAppointmentdWithPagination = async (
   }
 };
 
+const updateAppointment = async (data) => {
+  try {
+    const appointment = await db.appointment.findById(data.id);
+    if (!appointment) {
+      return {
+        EM: "Appointment not found",
+        EC: 2,
+        DT: "",
+      };
+    }
+
+    appointment.status = data.status;
+    await appointment.save();
+
+    return {
+      EM: "Update appointment successfully!",
+      EC: 0,
+      DT: "",
+    };
+  } catch (error) {
+    console.log(error);
+    return { EM: "Something went wrong with service", EC: 1, DT: [] };
+  }
+};
+
+const createMedicalRecord = async (data) => {
+  try {
+    console.log(data);
+
+    await db.MedicalRecords.create({
+      doctor_id: data.doctor_id,
+      patient_id: data.patient_id,
+      hospital_id: data.hospital_id,
+      diagnosis: data.diagnosis,
+      notes: data.notes,
+    });
+
+    const appointment = await db.appointment.findById(data.id);
+    if (!appointment) {
+      return {
+        EM: "Appointment not found",
+        EC: 2,
+        DT: "",
+      };
+    }
+
+    appointment.status = "Done";
+    await appointment.save();
+
+    return {
+      EM: "Create Medical Record succeeds",
+      EC: 0,
+      DT: [],
+    };
+  } catch (error) {
+    console.log(error);
+    return { EM: "something wrong with service", EC: 1, DT: [] };
+  }
+};
+
 module.exports = {
   getAllMedicalRecord,
   getMedicalRecordWithPagination,
   getAllDoctorInFaculty,
   getAllAppointment,
   getAppointmentdWithPagination,
+  updateAppointment,
+  createMedicalRecord,
 };

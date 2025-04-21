@@ -93,8 +93,48 @@ const getAppointmentByDoctor = async (req, res) => {
   }
 };
 
+const updateAppointment = async (req, res) => {
+  try {
+    console.log(req.body);
+    let data = await doctorApiService.updateAppointment(req.body);
+
+    return res.status(200).json({
+      EM: data.EM, // error message
+      EC: data.EC, // error code
+      DT: data.DT, //data
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      EM: "error from server", // error message
+      EC: "-1", // error code
+      DT: "", //data
+    });
+  }
+};
+
+const createMedicalRecord = async (req, res) => {
+  try {
+    let data = await doctorApiService.createMedicalRecord(req.body);
+    return res.status(200).json({
+      EM: data.EM, // error message
+      EC: data.EC, // error code
+      DT: data.DT, //data
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      EM: "error from server", // error message
+      EC: "-1", // error code
+      DT: "", //data
+    });
+  }
+};
+
 module.exports = {
   getMedicalRecord,
   readDoctor,
   getAppointmentByDoctor,
+  updateAppointment,
+  createMedicalRecord,
 };

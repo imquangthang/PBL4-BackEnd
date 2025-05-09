@@ -5,6 +5,7 @@ import userController from "../Controllers/userController.js";
 import roleController from "../Controllers/roleController.js";
 import hospitalController from "../Controllers/hospitalController.js";
 import doctorController from "../Controllers/doctorController.js";
+import messageController from "../Controllers/messageController.js";
 import { checkUserJWT, checkUserPermission } from "../Middleware/JWTActions.js";
 
 const initWedRoutes = (app) => {
@@ -16,6 +17,7 @@ const initWedRoutes = (app) => {
   router.post("/logout", apiController.handleLogout);
   // user routes
   router.get("/account", userController.getUserAccount);
+  router.post("/user/read-info-userIds", userController.getUserByIDs);
   router.post("/user/create", userController.createHospital);
   router.put("/user/update", userController.updateUser);
   router.delete("/user/delete", userController.deleteFunc);
@@ -71,6 +73,11 @@ const initWedRoutes = (app) => {
     "/doctor/create-medicalRecord",
     doctorController.createMedicalRecord
   );
+
+  //message routes
+  router.get("/messages", messageController.getAllMessage);
+  router.get("/messages/read-user", messageController.fetchAllUsersChatting);
+  router.post("/messages/send", messageController.sendMessage);
   //   router.put("/change-pass", apiController.handleChangePass);
   // rest API
   // GET - R, POST - C, PUT - U, DELETE - D

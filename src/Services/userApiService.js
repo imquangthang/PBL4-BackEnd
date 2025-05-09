@@ -350,6 +350,34 @@ const getUserByEmail = async (email) => {
   }
 };
 
+const getUserByIDs = async (ids) => {
+  try {
+    let user = await db.accounts
+      .find({ _id: { $in: ids } })
+      .select("username avatar email");
+    if (user) {
+      return {
+        EM: "get data user success",
+        EC: 0,
+        DT: user,
+      };
+    } else {
+      return {
+        EM: "get data user unsuccess",
+        EC: 0,
+        DT: [],
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      EM: "something wrong with service",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
 const updateUser = async (data) => {
   try {
     // Tìm người dùng theo email
@@ -526,6 +554,7 @@ module.exports = {
   deleteUser,
   getUserWithPagination,
   getUserByEmail,
+  getUserByIDs,
   updateUser,
   createHealthRecord,
   getHealthRecord,

@@ -77,9 +77,22 @@ const getMedicalRecordWithPagination = async (doctor_id, page, limit) => {
 
 const getAllDoctorInFaculty = async (faculty_id) => {
   try {
+    // get role doctor
+    let group = await db.groups.findOne({
+      name: "doctor",
+    });
+
+    if (!group) {
+      return {
+        EM: "Group not found",
+        EC: 4,
+      };
+    }
+
     // get all hospital
     let doctor = await db.accounts.find({
       faculty_id: faculty_id,
+      groupId: group._id,
     });
 
     if (doctor) {

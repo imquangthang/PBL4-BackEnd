@@ -1,37 +1,39 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
-import path from "path";
+import http from "http";
+import { Server } from "socket.io";
 import configViewEngine from "./Config/viewEngine.js";
 import configCORS from "./Middleware/CORS.js";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-import webRouter from "./Routes/Web.js";
 import connectDB from "./Models/ConnectDB.js";
 import initApiRoutes from "./Routes/Api.js";
+import initSocket from "./socket.js"; // 👈 import socket handler
 
 const app = express();
-const port = process.env.PORT || 3001;
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000", // React frontend
+    methods: ["GET", "POST"],
+  },
+});
 
-// config template engine
 configViewEngine(app);
-
-// config CORS
 configCORS(app);
-
-// config CORS
+app.use(express.json());
 app.use(cookieParser());
-
-// config body-parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Connect DB
 connectDB();
-
-// init wed routes
 initApiRoutes(app);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+// 👉 Tách socket xử lý vào file riêng
+initSocket(io);
+
+const port = process.env.PORT || 3001;
+server.listen(port, () => {
+  console.log(`🚀 Server is running at http://localhost:${port}`);
 });

@@ -390,8 +390,8 @@ const updateUser = async (data) => {
       user.gender = data.gender;
       user.address = data.address;
       user.avatar = data.avatar;
-      user.groupId = data.group ? data.group : user.groupId; // Giữ nguyên groupId nếu không có giá trị mới
-      user.faculty_id = data.faculty_id ? data.faculty_id : user.groupId; // Giữ nguyên groupId nếu không có giá trị mới
+      user.groupId = data.group ? data.group : user.groupId;
+      user.faculty_id = data.faculty_id ? data.faculty_id : user.faculty_id;
 
       // Lưu lại thay đổi
       await user.save();

@@ -17,11 +17,14 @@ const connectDB = async () => {
     let HOST = process.env.MONGODB_HOST;
     let PORT = process.env.MONGODB_PORT;
     let DB = process.env.MONGODB_DATABASE;
-    const conn = await mongoose.connect(`mongodb://${HOST}:${PORT}/${DB}`);
+    let url = process.env.MONGODB_ATLAS;
+    if (mongoose.connection.readyState === 0) {
+        const conn = await mongoose.connect(url || `mongodb://${HOST}:${PORT}/${DB}`);
 
-    console.log(
-      `MongoDB connected: ${conn.connection.host}:${conn.connection.port}/${conn.connection.name}`
-    );
+        console.log(
+          `✅ MongoDB connected: ${url ? "MongoDB Atlas" : "Local"} at ${conn.connection.host}:${conn.connection.port}/${conn.connection.name}`
+        );
+    }
 
     //create tables
     // createTableAccounts();

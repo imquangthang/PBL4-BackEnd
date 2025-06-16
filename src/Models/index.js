@@ -12,18 +12,29 @@ const db = {};
 let HOST = process.env.MONGODB_HOST;
 let PORT = process.env.MONGODB_PORT;
 let DB = process.env.MONGODB_DATABASE;
+let url = process.env.MONGODB_ATLAS;
+const connectDB = async () => {
+  try {
+    if (mongoose.connection.readyState === 0) {
+      const conn = await mongoose.connect(url || `mongodb://${HOST}:${PORT}/${DB}`);
 
-mongoose.connect(`mongodb://${HOST}:${PORT}/${DB}`);
+      console.log(
+        `✅ MongoDB connected: ${url ? "MongoDB Atlas" : "Local"} at ${conn.connection.host}:${conn.connection.port}/${conn.connection.name}`
+      );
 
-const connection = mongoose.connection;
+      db.mongoose = mongoose;
+      db.connection = conn.connection;
+    } else {
+      console.log("⚠️ MongoDB already connected.");
+    }
+  } catch (err) {
+    console.error("❌ MongoDB connection error:", err.message);
+    process.exit(1);
+  }
+};
 
-connection.on("error", (err) => {
-  console.error("MongoDB connection error:", err);
-});
+connectDB();
 
-connection.once("open", () => {
-  console.log("Connected to MongoDB successfully");
-});
 
 // Load tất cả các model từ thư mục hiện tại
 fs.readdirSync(__dirname)
@@ -36,8 +47,5 @@ fs.readdirSync(__dirname)
     const model = require(path.join(__dirname, file));
     db[model.modelName] = model;
   });
-
-db.mongoose = mongoose;
-db.connection = connection;
 
 module.exports = db;

@@ -78,6 +78,11 @@ const initWedRoutes = (app) => {
   router.get("/messages", messageController.getAllMessage);
   router.get("/messages/read-user", messageController.fetchAllUsersChatting);
   router.post("/messages/send", messageController.sendMessage);
+
+  // Staff API
+  router.get("/staff/read-patient", userController.readFunc);
+
+
   //   router.put("/change-pass", apiController.handleChangePass);
   // rest API
   // GET - R, POST - C, PUT - U, DELETE - D
